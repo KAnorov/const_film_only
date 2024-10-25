@@ -1,0 +1,10 @@
+.navigation {
+    background: linear-gradient(to top, rgba(255, 0, 0, 0.199), rgba(0, 0, 255, 0.61));
+
+    & ul {
+        margin: 0px;
+        list-style-type: none;
+        display: flex;
+        justify-content: space-around
+    }
+}

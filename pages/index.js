@@ -1,3 +1,4 @@
+import { Main } from "next/document";
 import Head from "next/head";
 
 
@@ -5,10 +6,8 @@ import Head from "next/head";
 export default function Home() {
   return <>
     <Head>
-    <title>Const_Film_HD</title>
-
+      <title>Const_Film_HD</title>
     </Head>
-      <button onClick={()=>console.log(alert('Привет!'))}>Click</button>
-    </>
-  ;
+    <button onClick={() => console.log(alert('Привет!'))}>Click</button>
+  </>
 }
