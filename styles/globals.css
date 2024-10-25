@@ -1,3 +1,42 @@
-body{
-    margin: 0px auto;
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    font-family: "Roboto", sans-serif;
+    background: url('https://farm9.staticflickr.com/8760/17195790401_94fcf60556_c.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
+
+.search-form input {
+    margin-right: 10px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.search-form button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
 }
