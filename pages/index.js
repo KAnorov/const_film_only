@@ -28,7 +28,7 @@ export default function Home() {
 
     return (
         <div className="container">
-            <h1>Movie Search</h1>
+            <h1>Найти Фильм:</h1>
             <SearchForm 
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
