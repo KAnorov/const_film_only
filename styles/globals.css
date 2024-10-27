@@ -9,13 +9,13 @@
 body {
     height: 100vh;
     font-family: "Roboto", sans-serif;
-    background: url('https://farm9.staticflickr.com/8760/17195790401_94fcf60556_c.jpg');
+    background: url('https://oir.mobi/uploads/posts/2021-03/1616981986_48-p-fon-dlya-vizitok-v-khoroshem-kachestve-50.jpg');
     background-size: cover;
     background-attachment: fixed;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 80rem;
     margin: 0 auto;
     padding: 20px;
 }
@@ -27,6 +27,8 @@ h1 {
 
 .search-form {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-around;
 }
 
 .search-form input {

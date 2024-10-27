@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import NavigatorFilm from "./Navigator";
 import classes from "@/components/Header/Headers.module.css";
 
 export default function Headers() {
@@ -38,7 +37,7 @@ export default function Headers() {
             style={{ top: хедерВиден ? '-100px' : '0', position: 'fixed', transition: 'top 0.3s' }}
         >
             <h1>Const_Film_HD</h1>
-            <NavigatorFilm />
+            
         </div>
     );
 }

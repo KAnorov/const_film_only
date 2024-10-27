@@ -1,4 +1,5 @@
 import Link from "next/link";
+import styles from './Navigator.module.css';
 
 const
     pages = [
@@ -9,8 +10,8 @@ const
 
 export default function NavigatorFilm() {
     return <nav>
-        <ul>
-        {pages.map(({ href, title }) => <li key={title}>
+        <ul className={styles.menu}>
+        {pages.map(({ href, title }) => <li key={title} className={styles.menuLi}>
       
             <Link href={href}>{title}</Link>
             </li>)}

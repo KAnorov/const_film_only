@@ -1,9 +1,10 @@
 import { useState } from "react";
 import MovieList from "./MovieList";
+import NavigatorFilm from "./Header/Navigator";
 
 
-export default function SearchFormFilm() {
-    const [поисковыйЗапрос, установитьПоисковыйЗапрос] = useState('');
+export default function SearchFormFilm({ defaultSearchTerm }) {
+    const [поисковыйЗапрос, установитьПоисковыйЗапрос] = useState(defaultSearchTerm || '');
     const [фильмы, установитьФильмы] = useState([]);
     const [error, setError] = useState('');
 
@@ -37,16 +38,20 @@ export default function SearchFormFilm() {
     );
 }
 
+
+
 export function SearchForm({ searchTerm, setSearchTerm, handleSearch }) {
-    return (
-        <div className="search-form">
-            <input
+    return <>
+          <div className="search-form">
+          <NavigatorFilm />
+          <div><input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Поиск..."
             />
-            <button onClick={handleSearch}>Найти</button> 
+            <button onClick={handleSearch}>Найти</button>
+            </div>
         </div>
-    );
+        </>
 }
