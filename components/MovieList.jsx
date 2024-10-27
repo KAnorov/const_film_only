@@ -1,14 +1,16 @@
-   const MovieList = ({ movies }) => {
+const MovieList = ({ movies }) => {
        return (
-           <div style={{ marginTop: '20px' }}>
+        <fieldset>
+           <ul>
                {movies.map((movie) => (
-                   <div key={movie.imdbID} style={{ marginBottom: '20px' }}>
+                   <li key={movie.imdbID}>
                        <h2>{movie.Title} ({movie.Year})</h2>
-                       <img src={movie.Poster} alt={movie.Title} style={{ width: '100px' }} />
-                   </div>
+                       <img src={movie.Poster} alt={movie.Title} />
+                   </li>
                ))}
-           </div>
-       );
-   };
+           </ul>
+           </fieldset>
+       )
+   }
 
    export default MovieList;
