@@ -7,20 +7,26 @@ export default function SearchFormFilm({ defaultSearchTerm }) {
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1); // Track the current page
+    const [hasMore, setHasMore] = useState(true); // Track if there are more movies to load
 
-    const handleSearch = async () => {
+    const handleSearch = async (newPage = 1) => {
         if (!searchTerm) {
             setError('Введите название фильма для поиска');
             return;
         }
         setLoading(true);
         try {
-            const response = await fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=f9787358`);
+            const response = await fetch(`https://www.omdbapi.com/?s=${searchTerm}&page=${newPage}&apikey=f9787358`);
             const data = await response.json();
-            console.log(data);
             if (data.Response === 'True') {
-                setMovies(data.Search);
+                if (newPage === 1) {
+                    setMovies(data.Search);
+                } else {
+                    setMovies((prevMovies) => [...prevMovies, ...data.Search]);
+                }
                 setError('');
+                setHasMore(data.Search.length > 0); // Check if there are more movies
             } else {
                 setMovies([]);
                 setError(data.Error || 'Неизвестная ошибка');
@@ -43,7 +49,8 @@ export default function SearchFormFilm({ defaultSearchTerm }) {
     useEffect(() => {
         const handler = setTimeout(() => {
             if (searchTerm) {
-                handleSearch();
+                setPage(1); // Reset to the first page when the search term changes
+                handleSearch(1);
             }
         }, 500);
 
@@ -51,6 +58,25 @@ export default function SearchFormFilm({ defaultSearchTerm }) {
             clearTimeout(handler);
         };
     }, [searchTerm]);
+
+    // Infinite scroll logic
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || loading || !hasMore) return;
+            setPage((prevPage) => prevPage + 1);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [loading, hasMore]);
+
+    useEffect(() => {
+        if (page > 1) {
+            handleSearch(page);
+        }
+    }, [page]);
 
     return (
         <div className="container">
@@ -79,7 +105,7 @@ export function SearchForm({ searchTerm, setSearchTerm, handleSearch }) {
                     aria-label="Search for a movie"
                 />
             </label>
-            <button onClick={handleSearch} aria-label="Search button">Найти</button>
+            <button onClick={() => handleSearch(1)} aria-label="Search button">Найти</button>
         </div>
     );
 }
