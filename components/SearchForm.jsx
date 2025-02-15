@@ -62,7 +62,7 @@ export default function SearchFormFilm({ defaultSearchTerm }) {
     // Infinite scroll logic
     useEffect(() => {
         const handleScroll = () => {
-            if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || loading || !hasMore) return;
+            if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || !hasMore) return;
             setPage((prevPage) => prevPage + 1);
         };
 
