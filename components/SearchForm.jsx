@@ -1,111 +1,90 @@
-import { useState, useEffect } from "react";
-import { MovieList2 } from "./MovieList";
-import NavigatorFilm from "./Header/Navigator";
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 export default function SearchFormFilm({ defaultSearchTerm }) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [movies, setMovies] = useState([]);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [page, setPage] = useState(1); // Track the current page
-    const [hasMore, setHasMore] = useState(true); // Track if there are more movies to load
+   const [searchTerm, setSearchTerm] = useState('');
+   const [movies, setMovies] = useState([]);
+   const [error, setError] = useState('');
+   const [loading, setLoading] = useState(false);
+   const pageRef = useRef(1);
+   const hasMoreRef = useRef(true);
 
-    const handleSearch = async (newPage = 1) => {
-        if (!searchTerm) {
-            setError('Введите название фильма для поиска');
-            return;
-        }
-        setLoading(true);
-        try {
-            const response = await fetch(`https://www.omdbapi.com/?s=${searchTerm}&page=${newPage}&apikey=f9787358`);
-            const data = await response.json();
-            if (data.Response === 'True') {
-                if (newPage === 1) {
-                    setMovies(data.Search);
-                } else {
-                    setMovies((prevMovies) => [...prevMovies, ...data.Search]);
-                }
-                setError('');
-                setHasMore(data.Search.length > 0); // Check if there are more movies
-            } else {
-                setMovies([]);
-                setError(data.Error || 'Неизвестная ошибка');
-            }
-        } catch (err) {
-            console.error(err);
-            setError('Ошибка при получении данных');
-        } finally {
-            setLoading(false);
-        }
-    };
+   const handleSearch = useCallback(async (newPage = 1) => {
+       if (!searchTerm) {
+           setError('Введите название фильма для поиска');
+           return;
+       }
+       setLoading(true);
+       try {
+           const response = await fetch(`https://www.omdbapi.com/?s=${searchTerm}&page=${newPage}&apikey=f9787358`);
+           const data = await response.json();
+           if (data.Response === 'True') {
+               setMovies(prevMovies => newPage === 1 ? data.Search : [...prevMovies, ...data.Search]);
+               setError('');
+               hasMoreRef.current = data.Search.length > 0; // Check if there are more movies
+           } else {
+               setMovies([]);
+               setError(data.Error || 'Неизвестная ошибка');
+           }
+       } catch (err) {
+           console.error(err);
+           setError('Ошибка при получении данных');
+       } finally {
+          setLoading(false);
+       }
+   }, [searchTerm]);
 
-    useEffect(() => {
-        if (defaultSearchTerm) {
-            setSearchTerm(defaultSearchTerm);
-            handleSearch();
-        }
-    }, [defaultSearchTerm]);
+   useEffect(() => {
+       if (defaultSearchTerm) {
+           setSearchTerm(defaultSearchTerm);
+           handleSearch();
+       }
+   }, [defaultSearchTerm, handleSearch]);
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            if (searchTerm) {
-                setPage(1); // Reset to the first page when the search term changes
-                handleSearch(1);
-            }
-        }, 500);
+   useEffect(() => {
+       const handler = setTimeout(() => {
+           if (searchTerm) {
+               pageRef.current = 1; // Reset to the first page when the search term changes
+               handleSearch(1);
+           }
+       }, 500);
 
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [searchTerm]);
+       return () => {
+           clearTimeout(handler);
+       };
+   }, [searchTerm, handleSearch]);
 
-    // Infinite scroll logic
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || !hasMore) return;
-            setPage((prevPage) => prevPage + 1);
-        };
+   // Infinite scroll logic
+   useEffect(() => {
+       const handleScroll = useCallback(() => {
+           if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || !hasMoreRef.current) return;
+           pageRef.current += 1;
+           handleSearch(pageRef.current);
+       }, [handleSearch]);
 
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [loading, hasMore]);
+       window.addEventListener('scroll', handleScroll);
+       return () => {
+           window.removeEventListener('scroll', handleScroll);
+       };
+   }, [handleSearch]);
 
-    useEffect(() => {
-        if (page > 1) {
-            handleSearch(page);
-        }
-    }, [page]);
+   const SearchFormMemo = useMemo(() => (
+       <SearchForm
+           searchTerm={searchTerm}
+           setSearchTerm={setSearchTerm}
+           handleSearch={handleSearch}
+       />
+   ), [searchTerm, handleSearch]);
 
-    return (
-        <div className="container">
-            <SearchForm
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                handleSearch={handleSearch}
-            />
-            {loading && <p>Loading...</p>}
-            {error && <p style={{ color: 'red' }}>Ошибка: {error}</p>}
-            <MovieList2 movies={movies} />
-        </div>
-    );
-}
+   const MovieList2Memo = useMemo(() => (
+       <MovieList2 movies={movies} />
+   ), [movies]);
 
-export function SearchForm({ searchTerm, setSearchTerm, handleSearch }) {
-    return (
-        <div className="search-form">
-            <NavigatorFilm />
-            <label>
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Поиск..."
-                    aria-label="Search for a movie"
-                />
-            </label>
-            <button onClick={() => handleSearch(1)} aria-label="Search button">Найти</button>
-        </div>
-    );
+   return (
+       <div className="container">
+           {SearchFormMemo}
+           {loading && <p>Loading...</p>}
+           {error && <p style={{ color: 'red' }}>Ошибка: {error}</p>}
+           {MovieList2Memo}
+       </div>
+   );
 }
